@@ -1,0 +1,236 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   OpticsView design tokens
+   Warm editorial system: white paper, sand, warm ink and bronze. Photography
+   carries the colour; type carries the authority.
+--------------------------------------------------------------------------- */
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, sans-serif;
+  --font-display: "Cormorant Garamond", "Iowan Old Style", Georgia,
+    "Times New Roman", serif;
+
+  --color-ink: #1f1916;
+
+  --color-ink-950: #17120f;
+  --color-ink-900: #1f1916;
+  --color-ink-800: #28211d;
+  --color-ink-700: #3d332d;
+  --color-ink-600: #4a413b;
+
+  --color-bronze-600: #8a5a3b;
+  --color-bronze-500: #a2704a;
+  --color-bronze-400: #c08a5c;
+  --color-bronze-300: #d9ae86;
+
+  --color-ochre-600: #96662f;
+  --color-ochre-500: #b07a3f;
+  --color-ochre-400: #c99558;
+  --color-ochre-200: #efd9b8;
+
+  --color-clay-600: #a1452f;
+  --color-clay-500: #bf5b3f;
+  --color-clay-400: #d97e63;
+
+  --color-sand-50: #ffffff;
+  --color-sand-100: #f7f1e8;
+  --color-sand-200: #efe3d3;
+  --color-sand-300: #e2d0ba;
+  --color-sand-400: #d9bfa3;
+
+  --color-stone-700: #57504a;
+  --color-stone-600: #6b625a;
+  --color-stone-500: #8a7f74;
+
+  --radius-card: 0px;
+
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+  * {
+    border-color: color-mix(in oklab, var(--color-sand-300) 65%, transparent);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-sand-50);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-sand-300);
+    color: var(--color-ink-950);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink-900);
+    outline-offset: 3px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Fine paper grain. Kept very quiet on light surfaces. */
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.16;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  }
+
+  .hairline {
+    background-image: linear-gradient(
+      to right,
+      transparent,
+      color-mix(in oklab, var(--color-sand-300) 90%, transparent),
+      transparent
+    );
+    height: 1px;
+  }
+
+  /* Scroll reveal ---------------------------------------------------------- */
+  /* Gated on the `js` class so content stays visible without JavaScript. */
+  html.js [data-reveal] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition:
+      opacity 0.8s var(--ease-out-soft),
+      transform 0.8s var(--ease-out-soft);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+
+  html.js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.js [data-reveal] {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* Capability marquee ----------------------------------------------------- */
+  .marquee {
+    display: flex;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black 8%,
+      black 92%,
+      transparent
+    );
+  }
+
+  .marquee-track {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 3rem;
+    padding-right: 3rem;
+    width: max-content;
+    animation: marquee 52s linear infinite;
+  }
+
+  .marquee:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      mask-image: none;
+      overflow-x: auto;
+    }
+    .marquee-track {
+      animation: none;
+    }
+  }
+
+  /* Subtle lift on interactive cards -------------------------------------- */
+  .lift {
+    transition:
+      transform 0.5s var(--ease-out-soft),
+      box-shadow 0.5s var(--ease-out-soft),
+      border-color 0.5s var(--ease-out-soft);
+  }
+
+  .lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 36px 70px -50px rgba(31, 25, 22, 0.4);
+  }
+
+  .zoom-media img {
+    transition: transform 1s var(--ease-out-soft);
+  }
+
+  .zoom-media:hover img {
+    transform: scale(1.04);
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility container-page {
+  width: 100%;
+  margin-inline: auto;
+  max-width: 82rem;
+  padding-inline: 1.5rem;
+
+  @media (min-width: 768px) {
+    padding-inline: 2.5rem;
+  }
+
+  @media (min-width: 1280px) {
+    padding-inline: 4rem;
+  }
+}
